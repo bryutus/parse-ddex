@@ -7,14 +7,14 @@ import (
 )
 
 type NewReleaseMessage struct {
-	// XMLName                xml.Name      `xml:"NewReleaseMessage"`
-	// LanguageAndScriptCode  string        `xml:"LanguageAndScriptCode,attr"`
-	// MessageSchemaVersionID string        `xml:"MessageSchemaVersionId,attr"`
+	XMLName                xml.Name      `xml:"NewReleaseMessage"`
+	LanguageAndScriptCode  string        `xml:"LanguageAndScriptCode,attr"`
+	MessageSchemaVersionID string        `xml:"MessageSchemaVersionId,attr"`
+	MessageHeader          MessageHeader `xml:"MessageHeader"`
+	ResourceList           ResourceList  `xml:"ResourceList"`
+	ReleaseList            ReleaseList   `xml:"ReleaseList"`
+	DealList               DealList      `xml:"DealList"`
 	// Description            string        `xml:",innerxml"`
-	MessageHeader MessageHeader `xml:"MessageHeader"`
-	ResourceList  ResourceList  `xml:"ResourceList"`
-	ReleaseList   ReleaseList   `xml:"ReleaseList"`
-	DealList      DealList      `xml:"DealList"`
 }
 
 type MessageHeader struct {
@@ -72,6 +72,15 @@ func main() {
 	if err := xml.Unmarshal(bytes, m); err != nil {
 		panic(err)
 	}
+
+	fmt.Println("##################")
+	fmt.Println("# Message")
+	fmt.Println("##################")
+	fmt.Printf("XMLName: %v\n", m.XMLName)
+	fmt.Printf("LanguageAndScriptCode: %v\n", m.LanguageAndScriptCode)
+	fmt.Printf("MessageSchemaVersionID: %v\n", m.MessageSchemaVersionID)
+
+	fmt.Printf("\n")
 
 	fmt.Println("##################")
 	fmt.Println("# MessageHeader")
