@@ -37,12 +37,28 @@ type MessageRecipient struct {
 }
 
 type ResourceList struct {
-	Resources []SoundRecording `xml:"SoundRecording"`
+	SoundRecordings []SoundRecording `xml:"SoundRecording"`
+	Image           Image            `xml:"Image"`
 }
 
 type SoundRecording struct {
-	SoundRecordingType string `xml:"SoundRecordingType"`
-	ISRC               string `xml:"SoundRecordingId>ISRC"`
+	SoundRecordingType string         `xml:"SoundRecordingType"`
+	ISRC               string         `xml:"SoundRecordingId>ISRC"`
+	ISWC               string         `xml:"IndirectSoundRecordingId>ISWC"`
+	ResourceReference  string         `xml:"ResourceReference"`
+	ReferenceTitle     ReferenceTitle `xml:"ReferenceTitle"`
+	Duration           string         `xml:"Duration"`
+}
+
+type ReferenceTitle struct {
+	LanguageAndScriptCode string `xml:",attr"`
+	Title                 string `xml:"TitleText"`
+}
+
+type Image struct {
+	ImageType         string `xml:"ImageType"`
+	ImageID           string `xml:"ImageId>ProprietaryId"`
+	ResourceReference string `xml:"ResourceReference"`
 }
 
 type ReleaseList struct {
@@ -100,7 +116,18 @@ func main() {
 	fmt.Println("##################")
 	fmt.Println("# ResourceList")
 	fmt.Println("##################")
-	fmt.Printf("%+v\n", m.ResourceList.Resources[0])
+	fmt.Println("SoundRecordings:")
+	for _, s := range m.ResourceList.SoundRecordings {
+		fmt.Printf("\tResourceReference: %v\n", s.ResourceReference)
+		fmt.Printf("\tSoundRecordingType: %v\n", s.SoundRecordingType)
+		fmt.Printf("\tISRC: %v\n", s.ISRC)
+		fmt.Printf("\tISWC: %v\n", s.ISWC)
+		fmt.Printf("\tTitle: %v, LanguageAndScriptCode: %v\n", s.ReferenceTitle.LanguageAndScriptCode, s.ReferenceTitle.Title)
+		fmt.Printf("\tDuration: %v\n", s.Duration)
+		fmt.Printf("\n")
+	}
+	fmt.Println("MessageRecipients:")
+	fmt.Printf("Image ImageType: %v, ImageID: %v, ResourceReference: %v\n", m.ResourceList.Image.ImageType, m.ResourceList.Image.ImageID, m.ResourceList.Image.ResourceReference)
 
 	fmt.Printf("\n")
 
