@@ -68,22 +68,21 @@ func main() {
 		panic(err)
 	}
 
-	message := new(NewReleaseMessage)
-
-	if err := xml.Unmarshal(bytes, message); err != nil {
+	m := new(NewReleaseMessage)
+	if err := xml.Unmarshal(bytes, m); err != nil {
 		panic(err)
 	}
 
 	fmt.Println("##################")
 	fmt.Println("# MessageHeader")
 	fmt.Println("##################")
-	fmt.Printf("MessageId: %v\n", message.MessageHeader.MessageID)
-	fmt.Printf("MessageCreatedDateTime: %v\n", message.MessageHeader.MessageCreatedDateTime)
-	fmt.Printf("MessageControlType: %v\n", message.MessageHeader.MessageControlType)
-	fmt.Printf("MessageSender PartyID: %v, PartyName: %v\n", message.MessageHeader.MessageSender.PartyID, message.MessageHeader.MessageSender.PartyName)
-	fmt.Printf("SentOnBehalfOf PartyID: %v, PartyName: %v\n", message.MessageHeader.SentOnBehalfOf.PartyID, message.MessageHeader.SentOnBehalfOf.PartyName)
+	fmt.Printf("MessageId: %v\n", m.MessageHeader.MessageID)
+	fmt.Printf("MessageCreatedDateTime: %v\n", m.MessageHeader.MessageCreatedDateTime)
+	fmt.Printf("MessageControlType: %v\n", m.MessageHeader.MessageControlType)
+	fmt.Printf("MessageSender PartyID: %v, PartyName: %v\n", m.MessageHeader.MessageSender.PartyID, m.MessageHeader.MessageSender.PartyName)
+	fmt.Printf("SentOnBehalfOf PartyID: %v, PartyName: %v\n", m.MessageHeader.SentOnBehalfOf.PartyID, m.MessageHeader.SentOnBehalfOf.PartyName)
 	fmt.Println("MessageRecipients:")
-	for _, r := range message.MessageHeader.MessageRecipients {
+	for _, r := range m.MessageHeader.MessageRecipients {
 		fmt.Printf("\tPartyID: %v, PartyName: %v\n", r.PartyID, r.PartyName)
 	}
 
@@ -92,19 +91,19 @@ func main() {
 	fmt.Println("##################")
 	fmt.Println("# ResourceList")
 	fmt.Println("##################")
-	fmt.Printf("%+v\n", message.ResourceList.Resources[0])
+	fmt.Printf("%+v\n", m.ResourceList.Resources[0])
 
 	fmt.Printf("\n")
 
 	fmt.Println("##################")
 	fmt.Println("# ReleaseList")
 	fmt.Println("##################")
-	fmt.Printf("%+v\n", message.ReleaseList.Releases[0])
+	fmt.Printf("%+v\n", m.ReleaseList.Releases[0])
 
 	fmt.Printf("\n")
 
 	fmt.Println("##################")
 	fmt.Println("# DealList")
 	fmt.Println("##################")
-	fmt.Printf("%+v\n", message.DealList.Deals[0])
+	fmt.Printf("%+v\n", m.DealList.Deals[0])
 }
