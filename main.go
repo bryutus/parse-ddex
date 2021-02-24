@@ -7,16 +7,33 @@ import (
 )
 
 type NewReleaseMessage struct {
-	LanguageAndScriptCode  string        `xml:"LanguageAndScriptCode,attr"`
-	MessageSchemaVersionID string        `xml:"MessageSchemaVersionId,attr"`
-	MessageHeader          MessageHeader `xml:"MessageHeader"`
-	ResourceList           ResourceList  `xml:"ResourceList"`
-	ReleaseList            ReleaseList   `xml:"ReleaseList"`
-	DealList               DealList      `xml:"DealList"`
+	// XMLName                xml.Name      `xml:"NewReleaseMessage"`
+	// LanguageAndScriptCode  string        `xml:"LanguageAndScriptCode,attr"`
+	// MessageSchemaVersionID string        `xml:"MessageSchemaVersionId,attr"`
+	// Description            string        `xml:",innerxml"`
+	MessageHeader MessageHeader `xml:"MessageHeader"`
+	ResourceList  ResourceList  `xml:"ResourceList"`
+	ReleaseList   ReleaseList   `xml:"ReleaseList"`
+	DealList      DealList      `xml:"DealList"`
 }
 
 type MessageHeader struct {
-	MessageID string `xml:"MessageId"`
+	MessageID              string             `xml:"MessageId"`
+	MessageSender          MessageSender      `xml:"MessageSender"`
+	SentOnBehalfOf         MessageSender      `xml:"SentOnBehalfOf"`
+	MessageRecipients      []MessageRecipient `xml:"MessageRecipient"`
+	MessageCreatedDateTime string             `xml:"MessageCreatedDateTime"`
+	MessageControlType     string             `xml:"MessageControlType"`
+}
+
+type MessageSender struct {
+	PartyID   string `xml:"PartyId"`
+	PartyName string `xml:"PartyName>FullName"`
+}
+
+type MessageRecipient struct {
+	PartyID   string `xml:"PartyId"`
+	PartyName string `xml:"PartyName>FullName"`
 }
 
 type ResourceList struct {
@@ -24,12 +41,8 @@ type ResourceList struct {
 }
 
 type SoundRecording struct {
-	SoundRecordingType string           `xml:"SoundRecordingType"`
-	SoundRecordingID   SoundRecordingID `xml:"SoundRecordingId"`
-}
-
-type SoundRecordingID struct {
-	ISRC string `xml:"ISRC"`
+	SoundRecordingType string `xml:"SoundRecordingType"`
+	ISRC               string `xml:"SoundRecordingId>ISRC"`
 }
 
 type ReleaseList struct {
@@ -37,13 +50,9 @@ type ReleaseList struct {
 }
 
 type Release struct {
-	IsMainRelease    bool      `xml:"IsMainRelease"`
-	ReleaseID        ReleaseID `xml:"ReleaseId"`
-	ReleaseReference string    `xml:"ReleaseReference"`
-}
-
-type ReleaseID struct {
-	ICPN string `xml:"ICPN"`
+	IsMainRelease    bool   `xml:"IsMainRelease"`
+	ICPN             string `xml:"ReleaseId>ICPN"`
+	ReleaseReference string `xml:"ReleaseReference"`
 }
 
 type DealList struct {
@@ -65,10 +74,37 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(message.LanguageAndScriptCode)
-	fmt.Println(message.MessageSchemaVersionID)
-	fmt.Println(message.MessageHeader.MessageID)
+	fmt.Println("##################")
+	fmt.Println("# MessageHeader")
+	fmt.Println("##################")
+	fmt.Printf("MessageId: %v\n", message.MessageHeader.MessageID)
+	fmt.Printf("MessageCreatedDateTime: %v\n", message.MessageHeader.MessageCreatedDateTime)
+	fmt.Printf("MessageControlType: %v\n", message.MessageHeader.MessageControlType)
+	fmt.Printf("MessageSender PartyID: %v, PartyName: %v\n", message.MessageHeader.MessageSender.PartyID, message.MessageHeader.MessageSender.PartyName)
+	fmt.Printf("SentOnBehalfOf PartyID: %v, PartyName: %v\n", message.MessageHeader.SentOnBehalfOf.PartyID, message.MessageHeader.SentOnBehalfOf.PartyName)
+	fmt.Println("MessageRecipients:")
+	for _, r := range message.MessageHeader.MessageRecipients {
+		fmt.Printf("\tPartyID: %v, PartyName: %v\n", r.PartyID, r.PartyName)
+	}
+
+	fmt.Printf("\n")
+
+	fmt.Println("##################")
+	fmt.Println("# ResourceList")
+	fmt.Println("##################")
 	fmt.Printf("%+v\n", message.ResourceList.Resources[0])
+
+	fmt.Printf("\n")
+
+	fmt.Println("##################")
+	fmt.Println("# ReleaseList")
+	fmt.Println("##################")
 	fmt.Printf("%+v\n", message.ReleaseList.Releases[0])
+
+	fmt.Printf("\n")
+
+	fmt.Println("##################")
+	fmt.Println("# DealList")
+	fmt.Println("##################")
 	fmt.Printf("%+v\n", message.DealList.Deals[0])
 }
