@@ -38,21 +38,33 @@ type MessageRecipient struct {
 
 type ResourceList struct {
 	SoundRecordings []SoundRecording `xml:"SoundRecording"`
-	Image           Image            `xml:"Image"`
+	Images          []Image          `xml:"Image"`
 }
 
 type SoundRecording struct {
-	SoundRecordingType string         `xml:"SoundRecordingType"`
-	ISRC               string         `xml:"SoundRecordingId>ISRC"`
-	ISWC               string         `xml:"IndirectSoundRecordingId>ISWC"`
-	ResourceReference  string         `xml:"ResourceReference"`
-	ReferenceTitle     ReferenceTitle `xml:"ReferenceTitle"`
-	Duration           string         `xml:"Duration"`
+	SoundRecordingType                 string                             `xml:"SoundRecordingType"`
+	ISRC                               string                             `xml:"SoundRecordingId>ISRC"`
+	ISWC                               string                             `xml:"IndirectSoundRecordingId>ISWC"`
+	ResourceReference                  string                             `xml:"ResourceReference"`
+	ReferenceTitle                     ReferenceTitle                     `xml:"ReferenceTitle"`
+	Duration                           string                             `xml:"Duration"`
+	SoundRecordingDetailsByTerritories []SoundRecordingDetailsByTerritory `xml:"SoundRecordingDetailsByTerritory"`
 }
 
 type ReferenceTitle struct {
-	LanguageAndScriptCode string `xml:",attr"`
+	LanguageAndScriptCode string `xml:"LanguageAndScriptCode,attr"`
 	Title                 string `xml:"TitleText"`
+}
+
+type SoundRecordingDetailsByTerritory struct {
+	TerritoryCodes []string `xml:"TerritoryCode"`
+	Titles         []Title  `xml:"Title"`
+}
+
+type Title struct {
+	LanguageAndScriptCode string `xml:"LanguageAndScriptCode,attr"`
+	Type                  string `xml:"TitleType,attr"`
+	Text                  string `xml:"TitleText"`
 }
 
 type Image struct {
@@ -122,12 +134,31 @@ func main() {
 		fmt.Printf("\tSoundRecordingType: %v\n", s.SoundRecordingType)
 		fmt.Printf("\tISRC: %v\n", s.ISRC)
 		fmt.Printf("\tISWC: %v\n", s.ISWC)
-		fmt.Printf("\tTitle: %v, LanguageAndScriptCode: %v\n", s.ReferenceTitle.LanguageAndScriptCode, s.ReferenceTitle.Title)
+		fmt.Printf("\tReferenceTitle: %v, LanguageAndScriptCode: %v\n", s.ReferenceTitle.LanguageAndScriptCode, s.ReferenceTitle.Title)
 		fmt.Printf("\tDuration: %v\n", s.Duration)
 		fmt.Printf("\n")
+		for _, d := range s.SoundRecordingDetailsByTerritories {
+			fmt.Println("\tTerritoryCodes:")
+			for _, c := range d.TerritoryCodes {
+				fmt.Printf("\t\tTerritoryCodes: %v\n", c)
+				fmt.Printf("\n")
+			}
+			fmt.Println("\tTitles:")
+			for _, t := range d.Titles {
+				fmt.Printf("\t\tLanguageAndScriptCode: %v\n", t.LanguageAndScriptCode)
+				fmt.Printf("\t\tType: %v\n", t.Type)
+				fmt.Printf("\t\tText: %v\n", t.Text)
+				fmt.Printf("\n")
+			}
+		}
 	}
-	fmt.Println("MessageRecipients:")
-	fmt.Printf("Image ImageType: %v, ImageID: %v, ResourceReference: %v\n", m.ResourceList.Image.ImageType, m.ResourceList.Image.ImageID, m.ResourceList.Image.ResourceReference)
+	fmt.Println("Images:")
+	for _, i := range m.ResourceList.Images {
+		fmt.Printf("\tResourceReference: %v\n", i.ResourceReference)
+		fmt.Printf("\tImageID: %v\n", i.ImageID)
+		fmt.Printf("\tImageType: %v\n", i.ImageType)
+		fmt.Printf("\n")
+	}
 
 	fmt.Printf("\n")
 
