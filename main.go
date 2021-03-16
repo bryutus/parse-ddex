@@ -59,12 +59,18 @@ type ReferenceTitle struct {
 type SoundRecordingDetailsByTerritory struct {
 	TerritoryCodes []string `xml:"TerritoryCode"`
 	Titles         []Title  `xml:"Title"`
+	PLine PLine `xml:"PLine"`
 }
 
 type Title struct {
 	LanguageAndScriptCode string `xml:"LanguageAndScriptCode,attr"`
 	Type                  string `xml:"TitleType,attr"`
 	Text                  string `xml:"TitleText"`
+}
+
+type PLine struct {
+	Year string `xml:"Year"`
+	Text string `xml:"PLineText"`
 }
 
 type Image struct {
@@ -150,6 +156,10 @@ func main() {
 				fmt.Printf("\t\tText: %v\n", t.Text)
 				fmt.Printf("\n")
 			}
+			fmt.Println("\tPLine:")
+			fmt.Printf("\t\tYear: %v\n", d.PLine.Year)
+			fmt.Printf("\t\tText: %v\n", d.PLine.Text)
+			fmt.Printf("\n")
 		}
 	}
 	fmt.Println("Images:")
