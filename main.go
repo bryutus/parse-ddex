@@ -70,9 +70,76 @@ type ReleaseList struct {
 }
 
 type Release struct {
-	IsMainRelease    bool   `xml:"IsMainRelease"`
-	ICPN             string `xml:"ReleaseId>ICPN"`
-	ReleaseReference string `xml:"ReleaseReference"`
+	IsMainRelease               bool                        `xml:"IsMainRelease,attr"`
+	ICPN                        string                      `xml:"ReleaseId>ICPN"`
+	ISRC                        string                      `xml:"ReleaseId>ISRC"`
+	ReleaseReference            string                      `xml:"ReleaseReference"`
+	ReleaseType                 string                      `xml:"ReleaseType"`
+	ReleaseResourceReferences   []ReleaseResourceReference  `xml:"ReleaseResourceReferenceList>ReleaseResourceReference"`
+	ReleaseDetailsByTerritories []ReleaseDetailsByTerritory `xml:"ReleaseDetailsByTerritory"`
+	PLine                       PLine                       `xml:"PLine"`
+}
+
+type ReleaseResourceReference struct {
+	ReleaseResourceReference string `xml:",innerxml"`
+	ReleaseResourceType      string `xml:"ReleaseResourceType,attr"`
+}
+
+type ReleaseDetailsByTerritory struct {
+	TerritoryCode       string          `xml:"TerritoryCode"`
+	DisplayArtistName   string          `xml:"DisplayArtistName"`
+	LabelName           string          `xml:"LabelName"`
+	Titles              []Title         `xml:"Title"`
+	DisplayArtists      []DisplayArtist `xml:"DisplayArtist"`
+	ParentalWarningType string          `xml:"ParentalWarningType"`
+	Genre               string          `xml:"Genre>GenreText"`
+	ResourceGroup       ResourceGroup   `xml:"ResourceGroup"`
+}
+
+type Title struct {
+	LanguageAndScriptCode string `xml:"LanguageAndScriptCode,attr"`
+	Type                  string `xml:"TitleType,attr"`
+	Text                  string `xml:"TitleText"`
+}
+
+type DisplayArtist struct {
+	SequenceNumber uint16    `xml:"SequenceNumber,attr"`
+	PartyName      string    `xml:"PartyName>FullName"`
+	PartyIds       []PartyId `xml:"PartyId"`
+	Roles          []string  `xml:"ArtistRole"`
+}
+
+type PartyId struct {
+	PartyId string `xml:",innerxml"`
+	IsISNI  bool   `xml:"IsISNI,attr"`
+	IsDPID  bool   `xml:"IsDPID,attr"`
+}
+
+type ResourceGroup struct {
+	TrackResources []TrackResource `xml:"ResourceGroup"`
+	AlbumContent   AlbumContent    `xml:"ResourceGroupContentItem"`
+}
+
+type TrackResource struct {
+	DiscNo        uint16         `xml:"SequenceNumber"`
+	TrackContents []TrackContent `xml:"ResourceGroupContentItem"`
+}
+
+type TrackContent struct {
+	TrackNo                  uint16                   `xml:"SequenceNumber"`
+	ResourceType             string                   `xml:"ResourceType"`
+	ReleaseResourceReference ReleaseResourceReference `xml:"ReleaseResourceReference"`
+}
+
+type AlbumContent struct {
+	SequenceNumber           uint16                   `xml:"SequenceNumber"`
+	ResourceType             string                   `xml:"ResourceType"`
+	ReleaseResourceReference ReleaseResourceReference `xml:"ReleaseResourceReference"`
+}
+
+type PLine struct {
+	Year string `xml:"Year"`
+	Text string `xml:"PLineText"`
 }
 
 type DealList struct {
@@ -145,7 +212,87 @@ func main() {
 	fmt.Println("##################")
 	fmt.Println("# ReleaseList")
 	fmt.Println("##################")
-	fmt.Printf("%+v\n", m.ReleaseList.Releases[0])
+	fmt.Println("Releases:")
+	for _, r := range m.ReleaseList.Releases {
+		id := r.ISRC
+		if r.IsMainRelease == true {
+			id = r.ICPN
+		}
+		fmt.Printf("\tReleaseReference: %v\n", r.ReleaseReference)
+		fmt.Printf("\tReleaseType: %v\n", r.ReleaseType)
+		fmt.Printf("\tICPN/ISRC: %v\n", id)
+		fmt.Printf("\tPLine - Year: %v\n", r.PLine.Year)
+		fmt.Printf("\tPLine - Text: %v\n", r.PLine.Text)
+		fmt.Println("\tReleaseResourceReferences:")
+		for _, ref := range r.ReleaseResourceReferences {
+			fmt.Printf("\t\tReleaseResourceReference: %v\n", ref.ReleaseResourceReference)
+			fmt.Printf("\t\tReleaseResourceType: %v\n", ref.ReleaseResourceType)
+			fmt.Printf("\n")
+		}
+
+		fmt.Println("\tReleaseDetailsByTerritories:")
+		for _, rel := range r.ReleaseDetailsByTerritories {
+			fmt.Printf("\t\tTerritoryCode: %v\n", rel.TerritoryCode)
+			fmt.Printf("\t\tDisplayArtistName: %v\n", rel.DisplayArtistName)
+			fmt.Println("\t\tTitles:")
+			for _, t := range rel.Titles {
+				fmt.Printf("\t\t\tLanguageAndScriptCode: %v\n", t.LanguageAndScriptCode)
+				fmt.Printf("\t\t\tType: %v\n", t.Type)
+				fmt.Printf("\t\t\tText: %v\n", t.Text)
+				fmt.Printf("\n")
+			}
+			fmt.Println("\t\tDisplayArtists:")
+			for _, a := range rel.DisplayArtists {
+				fmt.Printf("\t\t\tSequenceNumber: %v\n", a.SequenceNumber)
+				fmt.Printf("\t\t\tPartyName: %v\n", a.PartyName)
+
+				fmt.Println("\t\t\tPartyIds:")
+				for _, p := range a.PartyIds {
+					fmt.Printf("\t\t\t\tPartyId: %v\n", p.PartyId)
+					fmt.Printf("\t\t\t\tIsDPID: %v\n", p.IsDPID)
+					fmt.Printf("\t\t\t\tIsISNI: %v\n", p.IsISNI)
+					fmt.Printf("\n")
+				}
+
+				fmt.Println("\t\t\tRoles:")
+				for _, role := range a.Roles {
+					fmt.Printf("\t\t\t\tRole: %v\n", role)
+				}
+
+				fmt.Printf("\n")
+			}
+
+			fmt.Printf("\t\tLabelName: %v\n", rel.LabelName)
+			fmt.Printf("\t\tParentalWarningType: %v\n", rel.ParentalWarningType)
+			fmt.Printf("\t\tGenre: %v\n", rel.Genre)
+
+			fmt.Printf("\n")
+
+			if r.IsMainRelease == true {
+				fmt.Println("\t\tTrackResources:")
+				for _, tr := range rel.ResourceGroup.TrackResources {
+					fmt.Printf("\t\t\t\tDiscNo: %v\n", tr.DiscNo)
+					fmt.Println("\t\t\tTrackContents:")
+					for _, tc := range tr.TrackContents {
+						fmt.Printf("\t\t\t\tTrackNo: %v\n", tc.TrackNo)
+						fmt.Printf("\t\t\t\tResourceType: %v\n", tc.ResourceType)
+						fmt.Printf("\t\t\t\tReleaseResourceReference: %v\n", tc.ReleaseResourceReference.ReleaseResourceReference)
+						fmt.Printf("\t\t\t\tReleaseResourceType: %v\n", tc.ReleaseResourceReference.ReleaseResourceType)
+						fmt.Printf("\n")
+					}
+				}
+
+				fmt.Println("\t\tAlbumContent:")
+				fmt.Printf("\t\t\tSequenceNumber: %v\n", rel.ResourceGroup.AlbumContent.SequenceNumber)
+				fmt.Printf("\t\t\tResourceType: %v\n", rel.ResourceGroup.AlbumContent.ResourceType)
+				fmt.Printf("\t\t\tReleaseResourceReference: %v\n", rel.ResourceGroup.AlbumContent.ReleaseResourceReference.ReleaseResourceReference)
+				fmt.Printf("\t\t\tReleaseResourceType: %v\n", rel.ResourceGroup.AlbumContent.ReleaseResourceReference.ReleaseResourceType)
+
+				fmt.Printf("\n")
+			}
+		}
+		fmt.Printf("\n")
+	}
 
 	fmt.Printf("\n")
 
