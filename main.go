@@ -42,35 +42,21 @@ type ResourceList struct {
 }
 
 type SoundRecording struct {
-	SoundRecordingType                 string                             `xml:"SoundRecordingType"`
-	ISRC                               string                             `xml:"SoundRecordingId>ISRC"`
-	ISWC                               string                             `xml:"IndirectSoundRecordingId>ISWC"`
-	ResourceReference                  string                             `xml:"ResourceReference"`
-	ReferenceTitle                     ReferenceTitle                     `xml:"ReferenceTitle"`
-	Duration                           string                             `xml:"Duration"`
-	SoundRecordingDetailsByTerritories []SoundRecordingDetailsByTerritory `xml:"SoundRecordingDetailsByTerritory"`
-}
-
-type ReferenceTitle struct {
-	LanguageAndScriptCode string `xml:"LanguageAndScriptCode,attr"`
-	Title                 string `xml:"TitleText"`
+	SoundRecordingType                string                           `xml:"SoundRecordingType"`
+	ISWC                              string                           `xml:"IndirectSoundRecordingId>ISWC"`
+	ResourceReference                 string                           `xml:"ResourceReference"`
+	Duration                          string                           `xml:"Duration"`
+	SoundRecordingDetailsByTerritorry SoundRecordingDetailsByTerritory `xml:"SoundRecordingDetailsByTerritory"`
 }
 
 type SoundRecordingDetailsByTerritory struct {
-	TerritoryCodes []string `xml:"TerritoryCode"`
-	Titles         []Title  `xml:"Title"`
-	PLine PLine `xml:"PLine"`
+	TechnicalSoundRecordingDetails TechnicalSoundRecordingDetail `xml:"TechnicalSoundRecordingDetails"`
 }
 
-type Title struct {
-	LanguageAndScriptCode string `xml:"LanguageAndScriptCode,attr"`
-	Type                  string `xml:"TitleType,attr"`
-	Text                  string `xml:"TitleText"`
-}
-
-type PLine struct {
-	Year string `xml:"Year"`
-	Text string `xml:"PLineText"`
+type TechnicalSoundRecordingDetail struct {
+	TechnicalResourceDetailsReference string `xml:"TechnicalResourceDetailsReference"`
+	FileName                          string `xml:"File>FileName"`
+	FilePath                          string `xml:"File>FilePath"`
 }
 
 type Image struct {
@@ -138,29 +124,13 @@ func main() {
 	for _, s := range m.ResourceList.SoundRecordings {
 		fmt.Printf("\tResourceReference: %v\n", s.ResourceReference)
 		fmt.Printf("\tSoundRecordingType: %v\n", s.SoundRecordingType)
-		fmt.Printf("\tISRC: %v\n", s.ISRC)
 		fmt.Printf("\tISWC: %v\n", s.ISWC)
-		fmt.Printf("\tReferenceTitle: %v, LanguageAndScriptCode: %v\n", s.ReferenceTitle.LanguageAndScriptCode, s.ReferenceTitle.Title)
 		fmt.Printf("\tDuration: %v\n", s.Duration)
+		t := s.SoundRecordingDetailsByTerritorry.TechnicalSoundRecordingDetails
+		fmt.Printf("\tTechnicalResourceDetailsReference: %v\n", t.TechnicalResourceDetailsReference)
+		fmt.Printf("\tFileName: %v\n", t.FileName)
+		fmt.Printf("\tFilePath: %v\n", t.FilePath)
 		fmt.Printf("\n")
-		for _, d := range s.SoundRecordingDetailsByTerritories {
-			fmt.Println("\tTerritoryCodes:")
-			for _, c := range d.TerritoryCodes {
-				fmt.Printf("\t\tTerritoryCodes: %v\n", c)
-				fmt.Printf("\n")
-			}
-			fmt.Println("\tTitles:")
-			for _, t := range d.Titles {
-				fmt.Printf("\t\tLanguageAndScriptCode: %v\n", t.LanguageAndScriptCode)
-				fmt.Printf("\t\tType: %v\n", t.Type)
-				fmt.Printf("\t\tText: %v\n", t.Text)
-				fmt.Printf("\n")
-			}
-			fmt.Println("\tPLine:")
-			fmt.Printf("\t\tYear: %v\n", d.PLine.Year)
-			fmt.Printf("\t\tText: %v\n", d.PLine.Text)
-			fmt.Printf("\n")
-		}
 	}
 	fmt.Println("Images:")
 	for _, i := range m.ResourceList.Images {
