@@ -143,10 +143,32 @@ type PLine struct {
 }
 
 type DealList struct {
-	Deals []ReleaseDeal `xml:"ReleaseDeal"`
+	ReleaseDeals []ReleaseDeal `xml:"ReleaseDeal"`
 }
 
 type ReleaseDeal struct {
+	DealReleaseReferences []string `xml:"DealReleaseReference"`
+	Deals                 []Deal   `xml:"Deal"`
+}
+
+type Deal struct {
+	DealTerms     DealTerms `xml:"DealTerms"`
+	DealReference string    `xml:"DealReference"`
+}
+
+type DealTerms struct {
+	CommercialModelTypes []string       `xml:"CommercialModelType"`
+	UseTypes             []string       `xml:"Usage>UseType"`
+	TerritoryCode        string         `xml:"TerritoryCode"`
+	ValidityPeriod       ValidityPeriod `xml:"ValidityPeriod"`
+	TakeDown             bool           `xml:"TakeDown"`
+}
+
+type ValidityPeriod struct {
+	StartDate     string `xml:"StartDate"`
+	EndDate       string `xml:"EndDate"`
+	StartDateTime string `xml:"StartDateTime"`
+	EndDateTime   string `xml:"EndDateTime"`
 }
 
 func main() {
@@ -299,5 +321,19 @@ func main() {
 	fmt.Println("##################")
 	fmt.Println("# DealList")
 	fmt.Println("##################")
-	fmt.Printf("%+v\n", m.DealList.Deals[0])
+	fmt.Println("ReleaseDeals:")
+	for _, r := range m.DealList.ReleaseDeals {
+		fmt.Println("\tDealReleaseReferences:")
+		fmt.Printf("\t\tDealReleaseReference: %v\n", r.DealReleaseReferences)
+		fmt.Println("\tDeals>DealTerms:")
+		for _, d := range r.Deals {
+			fmt.Printf("\t\tCommercialModelType: %v\n", d.DealTerms.CommercialModelTypes)
+			fmt.Printf("\t\tUseType: %v\n", d.DealTerms.UseTypes)
+			fmt.Printf("\t\tTerritoryCode: %v\n", d.DealTerms.TerritoryCode)
+			fmt.Printf("\t\tStartDate: %v\n", d.DealTerms.ValidityPeriod.StartDate)
+			fmt.Printf("\t\tEndDate: %v\n", d.DealTerms.ValidityPeriod.EndDate)
+			fmt.Printf("\t\tDealReference: %v\n", d.DealReference)
+			fmt.Printf("\n")
+		}
+	}
 }
