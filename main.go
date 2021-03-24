@@ -50,19 +50,24 @@ type SoundRecording struct {
 }
 
 type SoundRecordingDetailsByTerritory struct {
-	TechnicalSoundRecordingDetails TechnicalSoundRecordingDetail `xml:"TechnicalSoundRecordingDetails"`
-}
-
-type TechnicalSoundRecordingDetail struct {
-	TechnicalResourceDetailsReference string `xml:"TechnicalResourceDetailsReference"`
-	FileName                          string `xml:"File>FileName"`
-	FilePath                          string `xml:"File>FilePath"`
+	TechnicalSoundRecordingDetail TechnicalDetail `xml:"TechnicalSoundRecordingDetails"`
 }
 
 type Image struct {
-	ImageType         string `xml:"ImageType"`
-	ImageID           string `xml:"ImageId>ProprietaryId"`
-	ResourceReference string `xml:"ResourceReference"`
+	ImageType               string                  `xml:"ImageType"`
+	ImageID                 string                  `xml:"ImageId>ProprietaryId"`
+	ResourceReference       string                  `xml:"ResourceReference"`
+	ImageDetailsByTerritory ImageDetailsByTerritory `xml:"ImageDetailsByTerritory"`
+}
+
+type ImageDetailsByTerritory struct {
+	TechnicalImageDetail TechnicalDetail `xml:"TechnicalImageDetails"`
+}
+
+type TechnicalDetail struct {
+	TechnicalResourceDetailsReference string `xml:"TechnicalResourceDetailsReference"`
+	FileName                          string `xml:"File>FileName"`
+	FilePath                          string `xml:"File>FilePath"`
 }
 
 type ReleaseList struct {
@@ -215,7 +220,7 @@ func main() {
 		fmt.Printf("\tSoundRecordingType: %v\n", s.SoundRecordingType)
 		fmt.Printf("\tISWC: %v\n", s.ISWC)
 		fmt.Printf("\tDuration: %v\n", s.Duration)
-		t := s.SoundRecordingDetailsByTerritorry.TechnicalSoundRecordingDetails
+		t := s.SoundRecordingDetailsByTerritorry.TechnicalSoundRecordingDetail
 		fmt.Printf("\tTechnicalResourceDetailsReference: %v\n", t.TechnicalResourceDetailsReference)
 		fmt.Printf("\tFileName: %v\n", t.FileName)
 		fmt.Printf("\tFilePath: %v\n", t.FilePath)
@@ -226,6 +231,10 @@ func main() {
 		fmt.Printf("\tResourceReference: %v\n", i.ResourceReference)
 		fmt.Printf("\tImageID: %v\n", i.ImageID)
 		fmt.Printf("\tImageType: %v\n", i.ImageType)
+		fmt.Printf("\tTechnicalResourceDetailsReference: %v\n", i.ImageDetailsByTerritory.TechnicalImageDetail.TechnicalResourceDetailsReference)
+		fmt.Printf("\tFileName: %v\n", i.ImageDetailsByTerritory.TechnicalImageDetail.FileName)
+		fmt.Printf("\tFilePath: %v\n", i.ImageDetailsByTerritory.TechnicalImageDetail.FilePath)
+
 		fmt.Printf("\n")
 	}
 
