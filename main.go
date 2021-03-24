@@ -293,7 +293,7 @@ func main() {
 			if r.IsMainRelease == true {
 				fmt.Println("\t\tTrackResources:")
 				for _, tr := range rel.ResourceGroup.TrackResources {
-					fmt.Printf("\t\t\t\tDiscNo: %v\n", tr.DiscNo)
+					fmt.Printf("\t\t\tDiscNo: %v\n", tr.DiscNo)
 					fmt.Println("\t\t\tTrackContents:")
 					for _, tc := range tr.TrackContents {
 						fmt.Printf("\t\t\t\tTrackNo: %v\n", tc.TrackNo)
