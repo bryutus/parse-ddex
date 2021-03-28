@@ -1,4 +1,4 @@
-package main
+package unmarshal
 
 import (
 	"encoding/xml"
@@ -175,7 +175,14 @@ type ValidityPeriod struct {
 	EndDateTime   string `xml:"EndDateTime"`
 }
 
-func Unmarshal(b []byte) {
+type Unmarshal struct{}
+
+func Exec(b []byte) {
+	u := Unmarshal{}
+	u.Show(b)
+}
+
+func (u Unmarshal) Show(b []byte) {
 	m := new(NewReleaseMessage)
 	if err := xml.Unmarshal(b, m); err != nil {
 		panic(err)

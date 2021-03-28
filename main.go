@@ -2,6 +2,8 @@ package main
 
 import (
 	"io/ioutil"
+
+	"github.com/bryutus/parse-ddex/unmarshal"
 )
 
 func main() {
@@ -10,5 +12,5 @@ func main() {
 		panic(err)
 	}
 
-	Unmarshal(bytes)
+	unmarshal.Exec(bytes)
 }
