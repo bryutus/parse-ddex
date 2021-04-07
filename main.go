@@ -3,6 +3,7 @@ package main
 import (
 	"io/ioutil"
 
+	"github.com/bryutus/parse-ddex/normalize"
 	"github.com/bryutus/parse-ddex/unmarshal"
 )
 
@@ -13,4 +14,5 @@ func main() {
 	}
 
 	unmarshal.Exec(bytes)
+	normalize.Exec(bytes)
 }
